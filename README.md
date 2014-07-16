@@ -37,6 +37,7 @@ There's JSDoc-generated [API documentation](https://casetext.github.io/firebase-
 ```bash
 git clone https://github.com/casetext/firebase-admin
 cd firebase-admin
+npm install
 npm test
 ```
 
