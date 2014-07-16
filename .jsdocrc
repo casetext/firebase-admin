@@ -21,8 +21,5 @@
       "linenums"        : true,
       "collapseSymbols" : false,
       "inverseNav"      : true
-    },
-    "opts": {
-      "template": "./docstrap/template"
     }
 }

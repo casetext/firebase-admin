@@ -30,7 +30,17 @@ account.ready.then(function() {
 
 ## Documentation
 
+Read here.
 
+## Develop
+
+```bash
+git clone https://github.com/casetext/firebase-admin
+cd firebase-admin
+npm test
+```
+
+Please ```jshint```. That is all.
 
 ## Caveats
 
@@ -38,3 +48,7 @@ account.ready.then(function() {
 already do in the admin tools and Forge.
 - Do not abuse the Firebase service. It's amazing and the people who work there
 are amazing.
+
+## I :heartbeat: Firebase
+
+Big whoop, wanna fight about it?
