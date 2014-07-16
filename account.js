@@ -12,8 +12,8 @@ var url = require('url'),
  * @constructor
  * @param {String} email The email address associated with the account.
  * @param {String} password The password for the account.
- * @property {Promise} ready A promise that will resolve when the account is
- * ready to use and reject if there's a problem logging in.
+ * @property {external:Promise} ready A promise that will resolve when the
+ * account is ready to use and reject if there's a problem logging in.
  */
 function FirebaseAccount(email, password) {
 
@@ -50,8 +50,9 @@ function FirebaseAccount(email, password) {
 /**
  * Promises to create a new Firebase instance under the account.
  * @param {String} name The name of the new instance.
- * @returns {Promise} A promise that resolves with a {@link FirebaseInstance} if
- * successful and rejects with an Error if there's an error.
+ * @returns {external:Promise} A promise that resolves with a
+ * {@link FirebaseInstance} if successful and rejects with an Error if
+ * there's an error.
  * @example
  * account.createDatabase('newfirebase')
  * .then(function(db) {
@@ -97,8 +98,9 @@ FirebaseAccount.prototype.createDatabase = function(name) {
 /**
  * Promises to retrieve a new Firebase instance under the account.
  * @param {String} name The name of the instance.
- * @returns {Promise} A promise that resolves with a {@link FirebaseInstance} if
- * successful and rejects with an Error if there's an error.
+ * @returns {external:Promise} A promise that resolves with a 
+ * @link FirebaseInstance} if successful and rejects with an Error if
+ * there's an error.
  * @example
  * account.getDatabase('existingfirebase')
  * .then(function(db) {
@@ -133,7 +135,7 @@ FirebaseAccount.prototype.getDatabase = function(name) {
 /**
  * Promises to remove a Firebase instance from the account
  * @param {FirebaseInstance} db The instance to remove.
- * @returns {Promise} A promise that resolves if db is deleted
+ * @returns {external:Promise} A promise that resolves if db is deleted
  * successfully and rejects with an Error if there's an error.
  */
 FirebaseAccount.prototype.deleteDatabase = function(db) {

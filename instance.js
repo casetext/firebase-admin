@@ -73,7 +73,7 @@ FirebaseInstance.prototype.toString = function() {
 
 /**
  * Promises to get all the auth tokens associated with the instance.
- * @returns {Promise} A promise that resolves with an Array of the
+ * @returns {external:Promise} A promise that resolves with an Array of the
  * instance's currently-valid auth tokens and rejects with an Error
  * if there's an error.
  * @example
