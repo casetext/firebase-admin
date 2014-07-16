@@ -1,7 +1,7 @@
 firebase-admin
 ==============
 
-Programmatically instantiate and modify Firebase instances.
+Programmatically instantiate and modify [Firebase](https://firebase.com) instances.
 
 ## Why?
 
