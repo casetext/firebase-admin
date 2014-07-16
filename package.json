@@ -20,7 +20,7 @@
   "main": "account.js",
   "scripts": {
     "test": "source ./test/prep.bash && ./node_modules/mocha/bin/mocha --recursive -u bdd -t 10000 -s 1000 -r ./test/setup test/spec",
-    "postpublish": "git checkout gh-pages && ./node_modules/.bin/jsdoc -t ./node_modules/ink-docstrap/template -d . -c .jsdocrc *.js README.md && git commit -am 'Update docs' && git push hub && git checkout master"
+    "postpublish": "git checkout gh-pages && ./node_modules/.bin/jsdoc -t ./node_modules/ink-docstrap/template -d . -c .jsdocrc *.js README.md && git add *.html styles scripts && git commit -am 'Update docs' && git push hub gh-pages && git checkout @{-1}"
   },
   "dependencies": {
     "request": "^2.37.0",
