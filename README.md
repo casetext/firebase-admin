@@ -30,7 +30,7 @@ account.ready.then(function() {
 
 ## Documentation
 
-Read here.
+There's JSDoc-generated [API documentation](https://casetext.github.io/firebase-admin).
 
 ## Develop
 
