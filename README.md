@@ -3,6 +3,8 @@ firebase-admin
 
 Programmatically instantiate and modify [Firebase](https://firebase.com) instances.
 
+[![Build Status](https://travis-ci.org/casetext/firebase-admin.svg?branch=master)](https://travis-ci.org/casetext/firebase-admin)
+
 ## Why?
 
 For automated testing, mostly.
