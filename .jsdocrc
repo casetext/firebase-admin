@@ -1,25 +1,28 @@
 {
-  "tags"      : {
-    "allowUnknownTags" : true
-  },
-    "plugins"   : ["plugins/markdown"],
-    "markdown"  : {
-      "parser"   : "gfm",
-      "hardwrap" : true
-    },
-    "templates" : {
-      "cleverLinks"     : false,
-      "monospaceLinks"  : false,
-      "default"         : {
-        "outputSourceFiles" : true
-      },
-      "systemName"      : "Bluebox",
-      "footer"          : "",
-      "copyright"       : "",
-      "navType"         : "vertical",
-      "theme"           : "cerulean",
-      "linenums"        : true,
-      "collapseSymbols" : false,
-      "inverseNav"      : true
-    }
+	"tags"      : {
+		"allowUnknownTags" : true
+	},
+	"plugins"   : ["plugins/markdown"],
+
+	"templates" : {
+		"cleverLinks"           : false,
+		"monospaceLinks"        : false,
+		"dateFormat"            : "ddd MMM Do YYYY",
+		"outputSourceFiles"     : true,
+		"outputSourcePath"      : true,
+		"systemName"            : "DocStrap",
+		"footer"                : "",
+		"copyright"             : "© 2014 J2H2, Inc.",
+		"navType"               : "vertical",
+		"theme"                 : "readable",
+		"linenums"              : true,
+		"collapseSymbols"       : false,
+		"inverseNav"            : true,
+		"highlightTutorialCode" : true,
+		"protocol": "https://"
+	},
+	"markdown"  : {
+		"parser"   : "gfm",
+		"hardwrap" : true
+	}
 }

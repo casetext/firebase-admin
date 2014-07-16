@@ -19,7 +19,8 @@
   },
   "main": "account.js",
   "scripts": {
-    "test": "source ./test/prep.bash && ./node_modules/mocha/bin/mocha --recursive -u bdd -t 10000 -s 1000 -r ./test/setup test/spec"
+    "test": "source ./test/prep.bash && ./node_modules/mocha/bin/mocha --recursive -u bdd -t 10000 -s 1000 -r ./test/setup test/spec",
+    "postpublish": "git checkout gh-pages && ./node_modules/.bin/jsdoc -t template -d . -c .jsdocrc *.js README.md && git commit -am 'Update docs' && git push hub && git checkout master"
   },
   "dependencies": {
     "request": "^2.37.0",
@@ -30,6 +31,8 @@
     "mocha": "^1.20.1",
     "chai": "^1.9.1",
     "chai-as-promised": "^4.1.1",
-    "prompt": "^0.2.13"
+    "prompt": "^0.2.13",
+    "jsdoc": "^3.3.0-alpha9",
+    "ink-docstrap": "^0.4.12"
   }
 }
