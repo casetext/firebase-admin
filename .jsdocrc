@@ -1,0 +1,28 @@
+{
+  "tags"      : {
+    "allowUnknownTags" : true
+  },
+    "plugins"   : ["plugins/markdown"],
+    "markdown"  : {
+      "parser"   : "gfm",
+      "hardwrap" : true
+    },
+    "templates" : {
+      "cleverLinks"     : false,
+      "monospaceLinks"  : false,
+      "default"         : {
+        "outputSourceFiles" : true
+      },
+      "systemName"      : "Bluebox",
+      "footer"          : "",
+      "copyright"       : "",
+      "navType"         : "vertical",
+      "theme"           : "cerulean",
+      "linenums"        : true,
+      "collapseSymbols" : false,
+      "inverseNav"      : true
+    },
+    "opts": {
+      "template": "./docstrap/template"
+    }
+}
