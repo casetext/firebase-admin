@@ -1,6 +1,6 @@
 {
   "name": "firebase-admin",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Programmatically instantiate and modify Firebase instances.",
   "keywords": [
     "firebase",
