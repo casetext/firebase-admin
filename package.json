@@ -8,6 +8,10 @@
     "account"
   ],
   "homepage": "https://casetext.github.io/firebase-admin",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/casetext/firebase-admin.git"
+  },
   "author": {
     "name": "Harry Schmidt",
     "email": "goldibex@casetext.com",
