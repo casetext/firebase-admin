@@ -107,9 +107,24 @@ describe('FirebaseAccount', function() {
 
   describe('bootstrapInstance', function() {
 
+    var instancePromise;
+
+    before(function() {
+      instancePromise = FirebaseAccount.bootstrapInstance(fbUser, fbPass);
+    });
+
     it('promises to create a new database with a random name immediately', function() {
 
-      return (expect( FirebaseAccount.bootstrapInstance(fbUser, fbPass) )).to.be.fulfilled;
+      return expect(instancePromise).to.be.fulfilled;
+
+    });
+
+    it('has a tearDown property that can be used to delete the database', function() {
+
+      return expect(instancePromise.then(function(instance) {
+        expect(instance.tearDown).to.be.a('function');
+        return expect(instance.tearDown()).to.be.fulfilled;
+      })).to.be.fulfilled;
 
     });
 

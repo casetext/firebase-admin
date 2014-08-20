@@ -186,7 +186,8 @@ FirebaseAccount.prototype.deleteDatabase = function(db) {
  * @param {String} password The password for the account.
  * @returns {external:Promise} A promise that resolves with a
  * {@link FirebaseInstance} if successful and rejects with an Error if
- * there's an error.
+ * there's an error. This instance also has an extra method, tearDown, that
+ * deletes the database.
  * @example
  * FirebaseAccount.bootstrapInstance('me@foo.com', 'foobar')
  * .then(function(db) {
@@ -200,7 +201,17 @@ FirebaseAccount.prototype.deleteDatabase = function(db) {
 FirebaseAccount.bootstrapInstance = function(email, password) {
 
   return new FirebaseAccount(email, password).ready.then(function(acct) {
-    return acct.createDatabase(Math.random().toString(36).slice(2));
+
+    return acct.createDatabase(Math.random().toString(36).slice(2))
+    .then(function(db) {
+
+      db.tearDown = function() {
+        return acct.deleteDatabase(db);
+      };
+      return db;
+
+    });
+
   });
 
 };
