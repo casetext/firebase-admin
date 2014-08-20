@@ -105,5 +105,15 @@ describe('FirebaseAccount', function() {
     });
   });
 
+  describe('bootstrapInstance', function() {
+
+    it('promises to create a new database with a random name immediately', function() {
+
+      return (expect( FirebaseAccount.bootstrapInstance(fbUser, fbPass) )).to.be.fulfilled;
+
+    });
+
+  });
+
 });
 

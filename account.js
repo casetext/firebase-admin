@@ -44,6 +44,7 @@ function FirebaseAccount(email, password) {
   }.bind(this));
 
   this.ready = deferred.promise;
+
 }
 
 
@@ -176,5 +177,33 @@ FirebaseAccount.prototype.deleteDatabase = function(db) {
   return deferred.promise;
 
 };
+
+
+/**
+ * Promises to create a new Firebase instance under the account
+ * with the specified username and password. A convenience method.
+ * @param {String} email The email address associated with the account.
+ * @param {String} password The password for the account.
+ * @returns {external:Promise} A promise that resolves with a
+ * {@link FirebaseInstance} if successful and rejects with an Error if
+ * there's an error.
+ * @example
+ * FirebaseAccount.bootstrapInstance('me@foo.com', 'foobar')
+ * .then(function(db) {
+ *   // get a Firebase reference to the new instance
+ *   var fb = new Firebase(db.toString());
+ *   fb.child('spam/spam/spam/spam').set('wonderful');
+ * }, function(err) {
+ *   console.error('Error while creating new instance:', err);
+ * });
+ */
+FirebaseAccount.bootstrapInstance = function(email, password) {
+
+  return new FirebaseAccount(email, password).ready.then(function(acct) {
+    return acct.createDatabase(Math.random().toString(36).slice(2));
+  });
+
+};
+
 
 module.exports = FirebaseAccount;
