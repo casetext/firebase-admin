@@ -18,7 +18,7 @@ var url = require('url'),
  * instance instead.
  * @see {FirebaseAccount#createDatabase}
  * @see {FirebaseAccount#getDatabase}
- * @protected 
+ * @protected
  * @constructor
  * @param {String} name The name of the Firebase.
  * @param {String} adminToken The administrative token to use
@@ -191,34 +191,39 @@ FirebaseInstance.prototype.removeAuthToken = function(token) {
     );
   }
 
-  if (!this.authTokens || this.authTokens.indexOf(token) === -1) {
-    return Q.reject(
-      new Error('No such token exists on firebase ' + this.toString())
-    );
-  }
+  return this.getAuthTokens()
+  .then(function(tokens) {
 
-  var deferred = Q.defer();
-
-  request.del({
-    url: 'https://' + this.name + '.firebaseio.com/.settings/secrets/' + token + '.json',
-    qs: {
-      auth: this.personalToken,
-    },
-    json: true
-  }, function(err, response, body) {
-    if (err) {
-      deferred.reject(err);
-    } else if (response.statusCode > 299) {
-      deferred.reject(new Error(response.statusCode));
-    } else if (body && body.error) {
-      deferred.reject(new Error(body.error));
-    } else {
-      this.authTokens.splice(this.authTokens.indexOf(token), 1);
-      deferred.resolve(this);
+    if (!Array.isArray(tokens) || tokens.indexOf(token) === -1) {
+      return Q.reject(
+        new Error('No such token exists on firebase ' + this.toString())
+      );
     }
-  }.bind(this));
 
-  return deferred.promise;
+    var deferred = Q.defer();
+
+    request.del({
+      url: 'https://' + this.name + '.firebaseio.com/.settings/secrets/' + token + '.json',
+      qs: {
+        auth: this.personalToken,
+      },
+      json: true
+    }, function(err, response, body) {
+      if (err) {
+        deferred.reject(err);
+      } else if (response.statusCode > 299) {
+        deferred.reject(new Error(response.statusCode));
+      } else if (body && body.error) {
+        deferred.reject(new Error(body.error));
+      } else {
+        this.authTokens.splice(this.authTokens.indexOf(token), 1);
+        deferred.resolve(this);
+      }
+    }.bind(this));
+
+    return deferred.promise;
+
+  }.bind(this));
 
 };
 
@@ -227,7 +232,7 @@ FirebaseInstance.prototype.removeAuthToken = function(token) {
  * Promises to get a Javascript object containing the current security rules.
  * NOTE: the top-level "rules" part of the JSON will be stripped.
  * @returns {external:Promise} A promise that resolves with an Object
- * containing the rules if they're retrieved successfully and 
+ * containing the rules if they're retrieved successfully and
  * rejects with an Error if there's an error.
  * @example
  * instance.getRules().then(function(rules) {
@@ -237,13 +242,13 @@ FirebaseInstance.prototype.removeAuthToken = function(token) {
  * });
  */
 FirebaseInstance.prototype.getRules = function() {
-  
+
   if (this.deleted) {
     return Q.reject(
       new Error('Cannot getRules from deleted database ' + this.toString())
     );
   }
- 
+
   var deferred = Q.defer();
 
   request.get({
@@ -276,7 +281,7 @@ FirebaseInstance.prototype.getRules = function() {
  * This object need not have a top-level "rules" key, although it will be
  * handled gracefully if it does.
  * @returns {external:Promise} A promise that resolves if the rules are changed
- * successfully and rejects with an Error if there's an error. 
+ * successfully and rejects with an Error if there's an error.
  * @example
  * instance.setRules({
  *   '.read': 'true',
@@ -294,7 +299,7 @@ FirebaseInstance.prototype.setRules = function(newRules) {
       new Error('Cannot setRules on deleted database ' + this.toString())
     );
   }
- 
+
   if (!(newRules.rules && Object.keys(newRules).length === 1)) {
     newRules = {
       rules: newRules
@@ -309,7 +314,7 @@ FirebaseInstance.prototype.setRules = function(newRules) {
       auth: this.personalToken,
     },
     json: true,
-    body: newRules 
+    body: newRules
   }, function(err, response, body) {
     if (err) {
       deferred.reject(err);

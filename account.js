@@ -34,7 +34,7 @@ function FirebaseAccount(email, password) {
     } else if (response.statusCode !== 200) {
       deferred.reject(new Error(response.statusCode));
     } else if (body.error) {
-      deferred.reject(new Error(body.error));
+      deferred.reject(new Error('Firebase error: ' + body.error));
     } else if (body.success === false) {
       deferred.reject(new Error('Bad credentials or server error.'));
     } else {
@@ -82,7 +82,7 @@ FirebaseAccount.prototype.createDatabase = function(name) {
     } else if (response.statusCode !== 200) {
       deferred.reject(new Error(response.statusCode));
     } else if (body.error) {
-      deferred.reject(new Error(body.error));
+      deferred.reject(new Error('Firebase error: ' + body.error));
     } else if (body.success === false) {
       deferred.reject(new Error('Bad credentials or server error.'));
     } else {
@@ -163,7 +163,7 @@ FirebaseAccount.prototype.deleteDatabase = function(db) {
     } else if (response.statusCode !== 200) {
       deferred.reject(new Error(response.statusCode));
     } else if (body.error) {
-      deferred.reject(new Error(body.error));
+      deferred.reject(new Error('Firebase error: ' + body.error));
     } else if (body.success === false) {
       deferred.reject(new Error('Bad credentials or server error.'));
     } else {
