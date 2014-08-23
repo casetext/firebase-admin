@@ -1,6 +1,6 @@
 {
   "name": "firebase-admin",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "description": "Programmatically instantiate and modify Firebase instances.",
   "keywords": [
     "firebase",
@@ -22,7 +22,7 @@
     "url": "https://github.com/casetext/firebase-admin/blob/master/LICENSE"
   },
   "main": "account.js",
-  "bin": "bin/firebase-admin.js",
+  "bin": "bin/firebase-admin",
   "scripts": {
     "test": "./script/test.bash",
     "postpublish": "./script/postpublish.bash"
