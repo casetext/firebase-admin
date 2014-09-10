@@ -5,6 +5,7 @@ var Q = require('q');
 
 var fbUser = process.env.FIREBASE_USER,
   fbPass = process.env.FIREBASE_PASS,
+  FirebaseAccount = require('../../account.js'),
   account;
 
 
@@ -48,6 +49,26 @@ describe('FirebaseAccount', function() {
         ).to.be.rejectedWith(Error);
 
       });
+
+    });
+
+  });
+
+  describe('defaultAuthConfig', function() {
+
+    it('has a sane default auth configuration cribbed from Firebase', function() {
+
+      expect(FirebaseAccount.defaultAuthConfig)
+      .to.include.keys([
+        'domains',
+        'sessionLengthSeconds',
+        'anonymous',
+        'facebook',
+        'twitter',
+        'github',
+        'google',
+        'password'
+      ]);
 
     });
 

@@ -333,4 +333,232 @@ FirebaseInstance.prototype.setRules = function(newRules) {
 
 };
 
+
+/**
+ * Promises to obtain the current authentication configuration for the instance.
+ * @returns {external:Promise} A promise that resolves with the auth config
+ * and rejects with an Error if there's an error.
+ */
+FirebaseInstance.prototype.getAuthConfig = function() {
+
+  var deferred = Q.defer();
+
+  request.get({
+    url: 'https://' + this.name + '.firebaseio.com/.settings/authConfig.json',
+    qs: {
+      auth: this.personalToken,
+    },
+    json: true
+  }, function(err, response, body) {
+
+    if (err) {
+      deferred.reject(err);
+    } else if (response.statusCode > 299) {
+      deferred.reject(new Error(response.statusCode));
+    } else if (body && body.error) {
+      deferred.reject(new Error(body.error));
+    } else {
+
+      if (typeof body === 'string' && body.length === 0) {
+        deferred.resolve(null);
+      } else {
+        deferred.resolve(JSON.parse(body));
+      }
+
+    }
+
+  }.bind(this));
+
+  return deferred.promise;
+
+};
+
+FirebaseInstance.prototype.setAuthConfig = function(config) {
+
+    var deferred = Q.defer();
+
+    request.put({
+      url: 'https://' + this.name + '.firebaseio.com/.settings/authConfig.json',
+      qs: {
+        auth: this.personalToken,
+      },
+      json: true,
+      body: config
+    }, function(err, response, body) {
+      if (err) {
+        deferred.reject(err);
+      } else if (response.statusCode > 299) {
+        deferred.reject(new Error(response.statusCode));
+      } else if (body && body.error) {
+        deferred.reject(new Error(body.error));
+      } else {
+        deferred.resolve();
+      }
+    }.bind(this));
+
+    return deferred.promise;
+
+};
+
+
+FirebaseInstance.prototype._authMethodCallback = function(deferred, err, resp, body) {
+
+  if (err) {
+    deferred.reject(err);
+  } else if (resp.statusCode > 299) {
+    deferred.reject(new Error(resp.statusCode));
+  } else if (body && body.error) {
+
+    var error = new Error(body.error.message);
+    if (body.error.code) {
+      error.code = body.error.code;
+    }
+    deferred.reject(error);
+
+  } else if (body.status && body.status !== 'ok') {
+    deferred.reject(new Error(body.status));
+  } else {
+    deferred.resolve(body);
+  }
+
+};
+
+/**
+ * Promises to create a Firebase Simple Login password-type user.
+ * @param {String} email The email address of the new user.
+ * @param {String} password The password of the new user.
+ * @returns {external:Promise} A promise that resolves if the rules are changed
+ * successfully and rejects with an Error if there's an error.
+ */
+FirebaseInstance.prototype.createUser = function(email, password) {
+
+  var deferred = Q.defer();
+
+  var qs = {
+    email: email,
+    password: password,
+    firebase: this.name
+  };
+
+  request.get({
+    url: 'https://auth.firebase.com/auth/firebase/create',
+    qs: qs,
+    json: true
+  }, this._authMethodCallback.bind(this, deferred));
+
+  return deferred.promise;
+
+};
+
+
+/**
+ * Promises to remove a Simple Login user.
+ * @param {String} email The email address of the user to remove.
+ * @returns {external:Promise} A promise that resolves with the new user info
+ * if the user is removed successfully and rejects with an Error
+ * if there's an error.
+ */
+FirebaseInstance.prototype.removeUser = function(email) {
+
+  var deferred = Q.defer();
+
+  request.get({
+    url: 'https://auth.firebase.com/auth/firebase/remove',
+    qs: {
+      token: this.adminToken,
+      firebase: this.name,
+      email: email
+    },
+    json: true
+  }, this._authMethodCallback.bind(this, deferred));
+
+  return deferred.promise;
+
+};
+
+
+/**
+ * Promises to change a Simple Login user's password.
+ * @param {String} email The email address of the user to remove.
+ * @param {String} newPassword The new password.
+ * @returns {external:Promise} A promise that resolves with the new user info
+ * if the user's password is changed successfully and rejects with an Error
+ * if there's an error.
+ */
+FirebaseInstance.prototype.changeUserPassword = function(email, newPassword) {
+
+  var deferred = Q.defer();
+
+  request.get({
+    url: 'https://auth.firebase.com/auth/firebase/reset_password',
+    qs: {
+      token: this.adminToken,
+      firebase: this.name,
+      email: email,
+      newPassword: newPassword
+    },
+    json: true
+  }, this._authMethodCallback.bind(this, deferred));
+
+  return deferred.promise;
+
+};
+
+
+/**
+ * Promises to return a list of all Simple Login password users in the Firebase.
+ * @returns {external:Promise} A promise that resolves with a list of users
+ * and rejects with an Error if there's an error.
+ */
+FirebaseInstance.prototype.listUsers = function() {
+
+  var deferred = Q.defer();
+
+  request.get({
+    url: 'https://auth.firebase.com/auth/firebase/list',
+    qs: {
+      token: this.adminToken,
+      firebase: this.name
+    },
+    json: true
+  }, this._authMethodCallback.bind(this, deferred));
+
+  return deferred.promise
+  .then(function(body) {
+
+    if (!body.users) {
+      throw new Error('No user body');
+    }
+    return body.users;
+
+  });
+
+};
+
+
+/**
+ * Promises to send a password reset email to a Simple Login user.
+ * @param {String} email The email address of the  user to send a message to.
+ * @returns {external:Promise} A promise that resolves if the message is sent
+ * successfully and rejects with an Error if there's an error.
+ */
+FirebaseInstance.prototype.sendResetEmail = function(email) {
+
+  var deferred = Q.defer();
+
+  request.get({
+    url: 'https://auth.firebase.com/auth/firebase/reset_password',
+    qs: {
+      token: this.adminToken,
+      firebase: this.name,
+      email: email
+    },
+    json: true
+
+  }, this._authMethodCallback.bind(this, deferred));
+
+  return deferred.promise;
+
+};
+
 module.exports = FirebaseInstance;

@@ -47,6 +47,52 @@ function FirebaseAccount(email, password) {
 
 }
 
+FirebaseAccount.defaultAuthConfig = {
+  domains: [
+    'localhost',
+    '127.0.0.1',
+    'casetext-goldibex.firebaseapp.com'
+  ],
+  sessionLengthSeconds: 86400,
+  anonymous: {
+    'enabled': false
+  },
+  facebook: {
+    'enabled': false,
+    'key': '',
+    'secret': ''
+  },
+  github: {
+    'enabled': false,
+    'key': '',
+    'secret': ''
+  },
+  google: {
+    'enabled': false,
+    'key': '',
+    'secret': ''
+  },
+  password: {
+    'enabled': false,
+    'emails': {
+      'password-reset': {
+        'from': 'no-reply@example.com',
+        'fromname': '',
+        'replyto': '',
+        'subject': '',
+        'template': 'Hello!\n\n' +
+          'It looks like you\'ve forgotten your password.\n\n' +
+          'Use the following temporary password within the next 24 hours ' +
+          'to log in and update your account: %TOKEN%\n\nThanks!\n'
+      }
+    }
+  },
+  twitter: {
+    'enabled': false,
+    'key': '',
+    'secret': ''
+  }
+};
 
 /**
  * Promises to create a new Firebase instance under the account.

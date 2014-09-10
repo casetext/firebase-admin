@@ -1,10 +1,12 @@
 
 'use strict';
 
-var Q = require('q');
+var Q = require('q'),
+  _ = require('lodash');
 
 var fbUser = process.env.FIREBASE_USER,
   fbPass = process.env.FIREBASE_PASS,
+  FirebaseAccount = require('../../account.js'),
   account,
   instance,
   authToken;
@@ -25,19 +27,17 @@ describe('FirebaseInstance', function() {
       });
 
     });
+
   });
 
   beforeEach(function() {
-
     return Q.delay(500);
-
   });
 
   after(function() {
-
     return account.deleteDatabase(instance);
-
   });
+
 
   describe('#getAuthTokens', function() {
 
@@ -131,6 +131,124 @@ describe('FirebaseInstance', function() {
 
         return expect(instance.setRules(badNewRules))
         .to.be.rejected;
+
+      });
+
+    });
+
+  });
+
+  describe('authentication', function() {
+
+    describe('with a pristine Firebase', function() {
+
+      describe('#getAuthConfig', function() {
+
+        it('gets the default (null) authConfig object', function() {
+
+          return expect(instance.getAuthConfig())
+          .to.eventually.equal(null);
+
+        });
+
+      });
+
+      describe('#setAuthConfig', function() {
+
+        it('sets the authConfig to the supplied configuration object', function() {
+
+          var config = _.cloneDeep(FirebaseAccount.defaultAuthConfig);
+          config.password.enabled = true;
+          return expect(instance.setAuthConfig(config))
+          .to.be.resolved;
+
+        });
+
+      });
+
+    });
+
+
+    describe('with a configured Firebase', function() {
+
+      describe('#getAuthConfig', function() {
+
+        it('actually returns the current configuration', function() {
+
+          return expect(instance.getAuthConfig())
+          .to.eventually.include.keys([
+            'domains',
+            'sessionLengthSeconds',
+            'anonymous',
+            'facebook',
+            'twitter',
+            'github',
+            'google',
+            'password'
+          ]);
+
+        });
+
+      });
+
+    });
+
+  });
+
+  describe('#createUser', function() {
+
+    it('creates a new user with the specified username and password', function() {
+
+      return expect(instance.createUser('foobar@foobar.com', 'blarg'))
+      .to.eventually.be.fulfilled;
+
+    });
+
+  });
+
+
+  describe('#listUsers', function() {
+
+    it('lists all users on the Firebase', function() {
+
+      return expect(instance.listUsers())
+      .to.eventually.have.length.above(0);
+
+    });
+
+  });
+
+  describe('#sendResetEmail', function() {
+
+    it('sends a reset email to the specified user', function() {
+
+      return expect(instance.sendResetEmail('foobar@foobar.com'))
+      .to.eventually.be.fulfilled;
+
+    });
+
+  });
+
+  describe('#changeUserPassword', function() {
+
+    it('changes the password of the specified user', function() {
+
+      return expect(instance.changeUserPassword('foobar@foobar.com'))
+      .to.eventually.be.fulfilled;
+
+    });
+
+  });
+
+  describe('#removeUser', function() {
+
+    it('removes the specified user', function() {
+
+      return instance.removeUser('foobar@foobar.com')
+      .then(function() {
+
+        return expect(instance.listUsers())
+        .to.eventually.have.length.below(1);
 
       });
 
