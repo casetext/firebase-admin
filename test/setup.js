@@ -5,14 +5,9 @@
 
 global.chai = require('chai');
 global.chai.use(require('chai-as-promised'));
-global.expect = chai.expect;
+global.expect = global.chai.expect;
 
-global.FirebaseAccount = require('../account');
 global.params = {};
-
-// get username and password for tests
-
-var prompt = require('prompt');
 
 if (process.env.FIREBASE_USER && process.env.FIREBASE_PASS) {
   global.params.firebaseUser = process.env.FIREBASE_USER;
