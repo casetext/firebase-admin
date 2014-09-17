@@ -11,29 +11,29 @@ var fbUser = process.env.FIREBASE_USER,
 
 describe('FirebaseAccount', function() {
 
-  var newDb;
+  var newDb, token;
 
   before(function() {
 
-    account = new FirebaseAccount(fbUser, fbPass);
-    return account.ready;
+    return FirebaseAccount.getToken(fbUser, fbPass)
+    .then(function(newToken) {
+      token = newToken;
+    });
 
   });
 
   beforeEach(function() {
-
     return Q.delay(500);
-
   });
 
 
-  describe('constructor', function() {
+  describe('getToken', function() {
 
     describe('given valid credentials', function() {
 
-      it('has a "ready" promise that resolves when authenticated', function() {
+      it('resolves when authenticated', function() {
 
-        return expect((new FirebaseAccount(fbUser, fbPass)).ready)
+        return expect(FirebaseAccount.getToken(fbUser, fbPass))
         .to.be.fulfilled;
 
       });
@@ -45,8 +45,9 @@ describe('FirebaseAccount', function() {
       it('has a "ready" promise that rejects with an error', function() {
 
         return expect(
-          (new FirebaseAccount('wrong@wrongville.com', 'wrongpass')).ready
-        ).to.be.rejectedWith(Error);
+          FirebaseAccount.getToken('wrong@wrongville.com', 'wrongpass')
+        )
+        .to.be.rejectedWith(Error);
 
       });
 
@@ -70,6 +71,14 @@ describe('FirebaseAccount', function() {
         'password'
       ]);
 
+    });
+
+  });
+
+  describe('constructor', function() {
+
+    it('takes a Firebase admin token', function() {
+      account = new FirebaseAccount(token);
     });
 
   });
@@ -131,21 +140,24 @@ describe('FirebaseAccount', function() {
     var instancePromise;
 
     before(function() {
-      instancePromise = FirebaseAccount.bootstrapInstance(fbUser, fbPass);
+
+      return FirebaseAccount.getToken(fbUser, fbPass)
+      .then(function(token) {
+        instancePromise = FirebaseAccount.bootstrapInstance(token);
+      });
+
     });
 
     it('promises to create a new database with a random name immediately', function() {
-
       return expect(instancePromise).to.be.fulfilled;
-
     });
 
     it('has a tearDown property that can be used to delete the database', function() {
 
-      return expect(instancePromise.then(function(instance) {
+      return instancePromise.then(function(instance) {
         expect(instance.tearDown).to.be.a('function');
         return expect(instance.tearDown()).to.be.fulfilled;
-      })).to.be.fulfilled;
+      });
 
     });
 

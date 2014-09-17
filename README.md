@@ -18,8 +18,9 @@ For automated testing, mostly.
 ```javascript
 var FirebaseAccount = require('firebase-admin');
 var Firebase = require('firebase');
-var account = new FirebaseAccount('me@example.com', 'password');
-account.ready.then(function() {
+FirebaseAccount.getToken('user', 'pass')
+.then(function(token) {
+  var account = new FirebaseAccount(token);
   account.createDatabase('new-instance-name')
   .then(function(instance) {
     var fb = new Firebase(instance.toString());

@@ -1,6 +1,6 @@
 {
   "name": "firebase-admin",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "Programmatically instantiate and modify Firebase instances.",
   "keywords": [
     "firebase",
@@ -31,7 +31,10 @@
     "firebase": "^1.0.17",
     "optometrist": "^0.1.3",
     "q": "^1.0.1",
-    "request": "^2.37.0"
+    "request": "^2.37.0",
+    "commander": "^2.3.0",
+    "chalk": "^0.5.1",
+    "cli-table": "^0.3.0"
   },
   "devDependencies": {
     "chai": "^1.9.1",

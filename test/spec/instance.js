@@ -16,10 +16,11 @@ describe('FirebaseInstance', function() {
 
   before(function() {
 
-    account = new FirebaseAccount(fbUser, fbPass);
 
-    return account.ready
-    .then(function() {
+    return FirebaseAccount.getToken(fbUser, fbPass)
+    .then(function(token) {
+
+      account = new FirebaseAccount(token);
 
       return account.createDatabase(Math.random().toString(36).slice(2))
       .then(function(newInstance) {
