@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>DocStrap External: Promise</title>
+	<title>DocStrap Class: getToken</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -70,12 +70,14 @@
 					
 
 
-	<h1 class="page-title">External: Promise</h1>
+	<h1 class="page-title">Class: getToken</h1>
 <section>
 
 <header>
     <h2>
-    Promise
+        <span class="ancestors"><a href="FirebaseAccount.html">FirebaseAccount</a>.</span>
+    
+    getToken
     </h2>
     
 </header>
@@ -86,11 +88,152 @@
 
     
         
-            <div class="description"><p>A promise object provided by the q promise library.</p></div>
+<dt>
+    <h4 class="name" id="getToken"><span class="type-signature"></span>new getToken<span class="signature">(email, password)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Gets a Firebase admin token given a username and password.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
         
 
-        
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>email</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The email address associated with the account.</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>password</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The password for the account.</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
 <dl class="details">
+	
+
+	<h5 class="subsection-title">Properties:</h5>
+
+	<dl>
+
+<table class="props table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>ready</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="external-Promise.html">external:Promise</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A promise that will resolve when the
+token is retrieved, or reject if there's an error.</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+</dl>
+
 	
 
 	
@@ -116,8 +259,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="instance.js.html">instance.js</a>,
-				 <a href="instance.js.html#sunlight-1-line-2">line 2</a>
+				<a href="account.js.html">account.js</a>,
+				 <a href="account.js.html#sunlight-1-line-34">line 34</a>
 			</li>
 		</ul>
 	</dd>
@@ -126,19 +269,24 @@
 	
 
 	
-	<dt class="tag-see">See:</dt>
-	<dd class="tag-see">
-		<ul>
-			<li><a href="https://github.com/kriskowal/q/wiki/API-Reference">https://github.com/kriskowal/q/wiki/API-Reference</a></li>
-			</ul>
-	</dd>
-	
 
 	
 </dl>
 
+    
+    
 
-        
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
     
     </div>
 
