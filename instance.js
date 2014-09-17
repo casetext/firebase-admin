@@ -423,6 +423,7 @@ FirebaseInstance.prototype._authMethodCallback = function(deferred, err, resp, b
 
 };
 
+
 /**
  * Promises to create a Firebase Simple Login password-type user.
  * @param {String} email The email address of the new user.

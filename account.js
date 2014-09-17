@@ -7,15 +7,31 @@ var url = require('url'),
   Q = require('q'),
   FirebaseInstance = require('./instance');
 
+
 /**
  * Creates a new reference to a Firebase account.
+ * @constructor
+ * @param {String} adminToken The admin token for the account.
+ */
+function FirebaseAccount(adminToken) {
+
+  var deferred = Q.defer();
+
+  this._dbs = {};
+  this.adminToken = adminToken;
+
+}
+
+
+/**
+ * Gets a Firebase admin token given a username and password.
  * @constructor
  * @param {String} email The email address associated with the account.
  * @param {String} password The password for the account.
  * @property {external:Promise} ready A promise that will resolve when the
- * account is ready to use and reject if there's a problem logging in.
+ * token is retrieved, or reject if there's an error.
  */
-function FirebaseAccount(email, password) {
+FirebaseAccount.getToken = function(email, password) {
 
   var deferred = Q.defer();
 
@@ -29,6 +45,7 @@ function FirebaseAccount(email, password) {
     },
     json: true
   }, function(err, response, body) {
+
     if (err) {
       deferred.reject(err);
     } else if (response.statusCode !== 200) {
@@ -38,14 +55,14 @@ function FirebaseAccount(email, password) {
     } else if (body.success === false) {
       deferred.reject(new Error('Bad credentials or server error.'));
     } else {
-      this.adminToken = body.adminToken;
-      deferred.resolve(this);
+      deferred.resolve(body.adminToken);
     }
-  }.bind(this));
 
-  this.ready = deferred.promise;
+  });
 
-}
+  return deferred.promise;
+
+};
 
 FirebaseAccount.defaultAuthConfig = {
   domains: [
@@ -235,7 +252,7 @@ FirebaseAccount.prototype.deleteDatabase = function(db) {
  * there's an error. This instance also has an extra method, tearDown, that
  * deletes the database.
  * @example
- * FirebaseAccount.bootstrapInstance('me@foo.com', 'foobar')
+ * FirebaseAccount.bootstrapInstance('token')
  * .then(function(db) {
  *   // get a Firebase reference to the new instance
  *   var fb = new Firebase(db.toString());
@@ -244,19 +261,17 @@ FirebaseAccount.prototype.deleteDatabase = function(db) {
  *   console.error('Error while creating new instance:', err);
  * });
  */
-FirebaseAccount.bootstrapInstance = function(email, password) {
+FirebaseAccount.bootstrapInstance = function(token) {
 
-  return new FirebaseAccount(email, password).ready.then(function(acct) {
+  var account = new FirebaseAccount(token);
 
-    return acct.createDatabase(Math.random().toString(36).slice(2))
-    .then(function(db) {
+  return account.createDatabase(Math.random().toString(36).slice(2))
+  .then(function(db) {
 
-      db.tearDown = function() {
-        return acct.deleteDatabase(db);
-      };
-      return db;
-
-    });
+    db.tearDown = function() {
+      return account.deleteDatabase(db);
+    };
+    return db;
 
   });
 
