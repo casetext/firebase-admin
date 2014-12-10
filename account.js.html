@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>DocStrap Source: account.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.readable.css">
+
+</head>
+
+<body>
+<div class="container-fluid">
+	<div class="navbar navbar-fixed-top navbar-inverse">
+		<div class="navbar-inner">
+			<a class="brand" href="index.html">DocStrap</a>
+			<ul class="nav">
+				
+				<li class="dropdown">
+					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="FirebaseAccount.html">FirebaseAccount</a>
+						</li>
+						
+						<li>
+							<a href="FirebaseAccount.getToken.html">FirebaseAccount.getToken</a>
+						</li>
+						
+						<li>
+							<a href="FirebaseInstance.html">FirebaseInstance</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="externals.list.html" class="dropdown-toggle" data-toggle="dropdown">Externals<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="external-Promise.html">Promise</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+			</ul>
+		</div>
+	</div>
+
+	<div class="row-fluid">
+
+		
+			<div class="span12">
+				
+				<div id="main">
+					
+
+
+		<h1 class="page-title">Source: account.js</h1>
+    
+<section>
+	<article>
+		<pre
+			class="sunlight-highlight-javascript linenums">
+'use strict';
+
+var url = require('url'),
+  request = require('request'),
+  Firebase = require('firebase'),
+  Q = require('q'),
+  FirebaseInstance = require('./instance');
+
+
+/**
+ * Creates a new reference to a Firebase account.
+ * @constructor
+ * @param {String} adminToken The admin token for the account.
+ */
+function FirebaseAccount(adminToken) {
+
+  var deferred = Q.defer();
+
+  this._dbs = {};
+  this.adminToken = adminToken;
+
+}
+
+
+/**
+ * Gets a Firebase admin token given a username and password.
+ * @constructor
+ * @param {String} email The email address associated with the account.
+ * @param {String} password The password for the account.
+ * @property {external:Promise} ready A promise that will resolve when the
+ * token is retrieved, or reject if there's an error.
+ */
+FirebaseAccount.getToken = function(email, password) {
+
+  var deferred = Q.defer();
+
+  this._dbs = {};
+
+  request.get({
+    url: 'https://admin.firebase.com/account/login',
+    qs: {
+      email: email,
+      password: password
+    },
+    json: true
+  }, function(err, response, body) {
+
+    if (err) {
+      deferred.reject(err);
+    } else if (response.statusCode !== 200) {
+      deferred.reject(new Error(response.statusCode));
+    } else if (body.error) {
+      deferred.reject(new Error('Firebase error: ' + body.error));
+    } else if (body.success === false) {
+      deferred.reject(new Error('Bad credentials or server error.'));
+    } else {
+      deferred.resolve(body.adminToken);
+    }
+
+  });
+
+  return deferred.promise;
+
+};
+
+FirebaseAccount.defaultAuthConfig = {
+  domains: [
+    'localhost',
+    '127.0.0.1',
+    'casetext-goldibex.firebaseapp.com'
+  ],
+  sessionLengthSeconds: 86400,
+  anonymous: {
+    'enabled': false
+  },
+  facebook: {
+    'enabled': false,
+    'key': '',
+    'secret': ''
+  },
+  github: {
+    'enabled': false,
+    'key': '',
+    'secret': ''
+  },
+  google: {
+    'enabled': false,
+    'key': '',
+    'secret': ''
+  },
+  password: {
+    'enabled': false,
+    'emails': {
+      'password-reset': {
+        'from': 'no-reply@example.com',
+        'fromname': '',
+        'replyto': '',
+        'subject': '',
+        'template': 'Hello!\n\n' +
+          'It looks like you\'ve forgotten your password.\n\n' +
+          'Use the following temporary password within the next 24 hours ' +
+          'to log in and update your account: %TOKEN%\n\nThanks!\n'
+      }
+    }
+  },
+  twitter: {
+    'enabled': false,
+    'key': '',
+    'secret': ''
+  }
+};
+
+/**
+ * Promises to create a new Firebase instance under the account.
+ * @param {String} name The name of the new instance.
+ * @returns {external:Promise} A promise that resolves with a
+ * {@link FirebaseInstance} if successful and rejects with an Error if
+ * there's an error.
+ * @example
+ * account.createDatabase('newfirebase')
+ * .then(function(db) {
+ *   // get a Firebase reference to the new instance
+ *   var fb = new Firebase(db.toString());
+ *   fb.child('spam/spam/spam/spam').set('wonderful');
+ * })
+ * .catch(function(err) {
+ *   console.error('Error while creating new instance:', err);
+ * });
+ */
+FirebaseAccount.prototype.createDatabase = function(name) {
+
+  var deferred = Q.defer();
+
+  request.post({
+    url: 'https://admin.firebase.com/firebase/' + name,
+    form: {
+      token: this.adminToken,
+      appName: name
+    }
+  }, function(err, response, body) {
+    body = JSON.parse(body);
+    if (err) {
+      deferred.reject(err);
+    } else if (response.statusCode !== 200) {
+      deferred.reject(new Error(response.statusCode));
+    } else if (body.error) {
+      deferred.reject(new Error('Firebase error: ' + body.error));
+    } else if (body.success === false) {
+      deferred.reject(new Error('Bad credentials or server error.'));
+    } else {
+      this._dbs[name] = new FirebaseInstance(name, this.adminToken);
+      deferred.resolve(this._dbs[name]);
+    }
+  }.bind(this));
+
+  return deferred.promise;
+
+};
+
+
+/**
+ * Promises to retrieve a new Firebase instance under the account.
+ * @param {String} name The name of the instance.
+ * @returns {external:Promise} A promise that resolves with a
+ * {@link FirebaseInstance} if successful and rejects with an Error if
+ * there's an error.
+ * @example
+ * account.getDatabase('existingfirebase')
+ * .then(function(db) {
+ *   // get a Firebase reference to the instance
+ *   var fb = new Firebase(db.toString());
+ *   fb.child('spam/spam/spam/spam').on('value', function(snap) {
+ *     console.log(snap.val(), 'spam, lovely spam');
+ *   });
+ * })
+ * .catch(function(err) {
+ *   console.error('Error retrieving instance:', err);
+ * });
+ */
+FirebaseAccount.prototype.getDatabase = function(name) {
+
+  if (this._dbs[name]) {
+    /* jshint newcap:false */
+    return Q(this._dbs[name]);
+  } else {
+    var newDb = new FirebaseInstance(name, this.adminToken);
+
+    return newDb.ready
+    .then(function() {
+      this._dbs[name] = newDb;
+      return newDb;
+    }.bind(this));
+  }
+
+};
+
+
+/**
+ * Promises to remove a Firebase instance from the account
+ * @param {FirebaseInstance} db The instance to remove.
+ * @returns {external:Promise} A promise that resolves if db is deleted
+ * successfully and rejects with an Error if there's an error.
+ */
+FirebaseAccount.prototype.deleteDatabase = function(db) {
+
+  if (db.deleted) {
+    return Q.reject(
+      new Error('Cannot delete already-deleted database ' + db.toString())
+    );
+  }
+
+  var deferred = Q.defer();
+
+  request.post({
+    url: 'https://admin.firebase.com/firebase/' + db.name,
+    form: {
+      token: this.adminToken,
+      namespace: db.name,
+      _method: 'DELETE'
+    }
+  }, function(err, response, body) {
+    body = JSON.parse(body);
+    if (err) {
+      deferred.reject(err);
+    } else if (response.statusCode !== 200) {
+      deferred.reject(new Error(response.statusCode));
+    } else if (body.error) {
+      deferred.reject(new Error('Firebase error: ' + body.error));
+    } else if (body.success === false) {
+      deferred.reject(new Error('Bad credentials or server error.'));
+    } else {
+      db.deleted = true;
+      delete this._dbs[db.name];
+      deferred.resolve();
+    }
+
+  }.bind(this));
+
+  return deferred.promise;
+
+};
+
+
+/**
+ * Promises to create a new Firebase instance under the account
+ * with the specified username and password. A convenience method.
+ * @param {String} email The email address associated with the account.
+ * @param {String} password The password for the account.
+ * @returns {external:Promise} A promise that resolves with a
+ * {@link FirebaseInstance} if successful and rejects with an Error if
+ * there's an error. This instance also has an extra method, tearDown, that
+ * deletes the database.
+ * @example
+ * FirebaseAccount.bootstrapInstance('token')
+ * .then(function(db) {
+ *   // get a Firebase reference to the new instance
+ *   var fb = new Firebase(db.toString());
+ *   fb.child('spam/spam/spam/spam').set('wonderful');
+ * }, function(err) {
+ *   console.error('Error while creating new instance:', err);
+ * });
+ */
+FirebaseAccount.bootstrapInstance = function(token) {
+
+  var account = new FirebaseAccount(token);
+
+  return account.createDatabase(Math.random().toString(36).slice(2))
+  .then(function(db) {
+
+    db.tearDown = function() {
+      return account.deleteDatabase(db);
+    };
+    return db;
+
+  });
+
+};
+
+
+module.exports = FirebaseAccount;
+</pre>
+	</article>
+</section>
+
+
+
+
+
+				</div>
+
+				<div class="clearfix"></div>
+				<footer>
+					
+					
+		<span class="copyright">
+		© 2014 J2H2, Inc.
+		</span>
+					<br />
+					
+		<span class="jsdoc-message">
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha9</a>
+		on Wed Dec 10th 2014 using the <a
+			href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		</span>
+				</footer>
+			</div>
+
+			
+			<br clear="both">
+		</div>
+
+	</div>
+	<!--<script src="scripts/sunlight.js"></script>-->
+	<script src="scripts/docstrap.lib.js"></script>
+	<script src="scripts/bootstrap-dropdown.js"></script>
+	<script src="scripts/toc.js"></script>
+
+	<script>
+		$( function () {
+			$( "[id*='$']" ).each( function () {
+				var $this = $( this );
+
+				$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+			} );
+
+			$( "#toc" ).toc( {
+				anchorName  : function ( i, heading, prefix ) {
+					return $( heading ).attr( "id" ) || ( prefix + i );
+				},
+				selectors   : "h1,h2,h3,h4",
+				showAndHide : false,
+				scrollTo    : "100px"
+			} );
+
+			$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
+			$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+			$( '.dropdown-toggle' ).dropdown();
+//			$( ".tutorial-section pre, .readme-section pre" ).addClass( "sunlight-highlight-javascript" ).addClass( "linenums" );
+
+			$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+				var $this = $( this );
+
+				var example = $this.find( "code" );
+				exampleText = example.html();
+				var lang = /{@lang (.*?)}/.exec( exampleText );
+				if ( lang && lang[1] ) {
+					exampleText = exampleText.replace( lang[0], "" );
+					example.html( exampleText );
+					lang = lang[1];
+				} else {
+					lang = "javascript";
+				}
+
+				if ( lang ) {
+
+					$this
+						.addClass( "sunlight-highlight-" + lang )
+						.addClass( "linenums" )
+						.html( example.html() );
+
+				}
+			} );
+
+			Sunlight.highlightAll( {
+				lineNumbers : true,
+				showMenu : true,
+				enableDoclinks : true
+			} );
+		} );
+	 </script>
+
+
+
+	<!--Navigation and Symbol Display-->
+	
+
+
+	<!--Google Analytics-->
+	
+
+</body>
+</html>
