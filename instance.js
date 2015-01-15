@@ -463,12 +463,10 @@ FirebaseInstance.prototype.removeUser = function(email) {
 
   var deferred = Q.defer();
 
-  request.get({
-    url: 'https://auth.firebase.com/auth/firebase/remove',
+  request.del({
+    url: 'https://auth.firebase.com/v2/' + this.name + '/users/' + email,
     qs: {
-      token: this.adminToken,
-      firebase: this.name,
-      email: email
+      token: this.adminToken
     },
     json: true
   }, this._authMethodCallback.bind(this, deferred));
@@ -516,7 +514,7 @@ FirebaseInstance.prototype.listUsers = function() {
   var deferred = Q.defer();
 
   request.get({
-    url: 'https://auth.firebase.com/auth/firebase/list',
+    url: 'https://auth.firebase.com/v2/' + this.name + '/users',
     qs: {
       token: this.adminToken,
       firebase: this.name
