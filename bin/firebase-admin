@@ -50,6 +50,13 @@ program.on('--help', function() {
   console.log('    user remove [username]: remove user from Simple Login');
   console.log('    user reset [username]: send password reset email');
   console.log('');
+
+  console.log('  Environment variables firebase-admin will use if defined include:');
+  console.log('');
+  console.log('    FIREBASE_ADMIN_USER');
+  console.log('    FIREBASE_ADMIN_PASS');
+  console.log('');
+
 });
 
 var adminToken = program.firebaseAdminToken || process.env.FIREBASE_ADMIN_TOKEN;
@@ -66,6 +73,13 @@ if (program.args.length === 0) {
 
 if (adminToken) {
   ready = Q.when(adminToken);
+} else if (process.env.FIREBASE_ADMIN_USER && process.env.FIREBASE_ADMIN_PASS) {
+
+  ready = FirebaseAccount.getToken(
+    process.env.FIREBASE_ADMIN_USER,
+    process.env.FIREBASE_ADMIN_PASS
+  );
+
 } else {
 
   var deferred = Q.defer();
