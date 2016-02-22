@@ -22,53 +22,10 @@ function FirebaseAccount(adminToken) {
 
 }
 
-
-/**
- * Gets a Firebase admin token given a username and password.
- * @constructor
- * @param {String} email The email address associated with the account.
- * @param {String} password The password for the account.
- * @property {external:Promise} ready A promise that will resolve when the
- * token is retrieved, or reject if there's an error.
- */
-FirebaseAccount.getToken = function(email, password) {
-
-  var deferred = Q.defer();
-
-  this._dbs = {};
-
-  request.get({
-    url: 'https://admin.firebase.com/account/login',
-    qs: {
-      email: email,
-      password: password
-    },
-    json: true
-  }, function(err, response, body) {
-
-    if (err) {
-      deferred.reject(err);
-    } else if (response.statusCode !== 200) {
-      deferred.reject(new Error(response.statusCode));
-    } else if (body.error) {
-      deferred.reject(new Error('Firebase error: ' + body.error));
-    } else if (body.success === false) {
-      deferred.reject(new Error('Bad credentials or server error.'));
-    } else {
-      deferred.resolve(body.adminToken);
-    }
-
-  });
-
-  return deferred.promise;
-
-};
-
 FirebaseAccount.defaultAuthConfig = {
   domains: [
     'localhost',
-    '127.0.0.1',
-    'casetext-goldibex.firebaseapp.com'
+    '127.0.0.1'
   ],
   sessionLengthSeconds: 86400,
   anonymous: {
@@ -255,7 +212,7 @@ FirebaseAccount.prototype.deleteDatabase = function(db) {
  * FirebaseAccount.bootstrapInstance('token')
  * .then(function(db) {
  *   // get a Firebase reference to the new instance
- *   var fb = new Firebase(db.toString());
+ *   var fb = new   Firebase(db.toString());
  *   fb.child('spam/spam/spam/spam').set('wonderful');
  * }, function(err) {
  *   console.error('Error while creating new instance:', err);

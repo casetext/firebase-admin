@@ -3,56 +3,19 @@
 
 var Q = require('q');
 
-var fbUser = process.env.FIREBASE_USER,
-  fbPass = process.env.FIREBASE_PASS,
-  FirebaseAccount = require('../../account.js'),
+var FirebaseAccount = require('../../account.js'),
   account;
-
 
 describe('FirebaseAccount', function() {
 
   var newDb, token;
 
   before(function() {
-
-    return FirebaseAccount.getToken(fbUser, fbPass)
-    .then(function(newToken) {
-      token = newToken;
-    });
-
+    token = process.env.FIREBASE_ADMIN_TOKEN;
   });
 
   beforeEach(function() {
     return Q.delay(500);
-  });
-
-
-  describe('getToken', function() {
-
-    describe('given valid credentials', function() {
-
-      it('resolves when authenticated', function() {
-
-        return expect(FirebaseAccount.getToken(fbUser, fbPass))
-        .to.be.fulfilled;
-
-      });
-
-    });
-
-    describe('given invalid credentials', function() {
-
-      it('has a "ready" promise that rejects with an error', function() {
-
-        return expect(
-          FirebaseAccount.getToken('wrong@wrongville.com', 'wrongpass')
-        )
-        .to.be.rejectedWith(Error);
-
-      });
-
-    });
-
   });
 
   describe('defaultAuthConfig', function() {
@@ -140,12 +103,7 @@ describe('FirebaseAccount', function() {
     var instancePromise;
 
     before(function() {
-
-      return FirebaseAccount.getToken(fbUser, fbPass)
-      .then(function(token) {
-        instancePromise = FirebaseAccount.bootstrapInstance(token);
-      });
-
+      instancePromise = FirebaseAccount.bootstrapInstance(token);
     });
 
     it('promises to create a new database with a random name immediately', function() {

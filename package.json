@@ -1,6 +1,6 @@
 {
   "name": "firebase-admin",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "Programmatically instantiate and modify Firebase instances.",
   "keywords": [
     "firebase",
@@ -24,7 +24,7 @@
   "main": "account.js",
   "bin": "bin/firebase-admin",
   "scripts": {
-    "test": "./script/test.bash",
+    "test": "mocha --recursive -u bdd -t 30000 -s 2000 -r ./test/setup test/spec",
     "postpublish": "./script/postpublish.bash"
   },
   "dependencies": {

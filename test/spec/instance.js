@@ -4,9 +4,7 @@
 var Q = require('q'),
   _ = require('lodash');
 
-var fbUser = process.env.FIREBASE_USER,
-  fbPass = process.env.FIREBASE_PASS,
-  FirebaseAccount = require('../../account.js'),
+var FirebaseAccount = require('../../account.js'),
   account,
   instance,
   authToken;
@@ -16,17 +14,11 @@ describe('FirebaseInstance', function() {
 
   before(function() {
 
+    account = new FirebaseAccount(process.env.FIREBASE_ADMIN_TOKEN);
 
-    return FirebaseAccount.getToken(fbUser, fbPass)
-    .then(function(token) {
-
-      account = new FirebaseAccount(token);
-
-      return account.createDatabase(Math.random().toString(36).slice(2))
-      .then(function(newInstance) {
-        instance = newInstance;
-      });
-
+    return account.createDatabase(Math.random().toString(36).slice(2))
+    .then(function(newInstance) {
+      instance = newInstance;
     });
 
   });
@@ -160,8 +152,10 @@ describe('FirebaseInstance', function() {
 
           var config = _.cloneDeep(FirebaseAccount.defaultAuthConfig);
           config.password.enabled = true;
-          return expect(instance.setAuthConfig(config))
-          .to.be.resolved;
+          return instance.setAuthConfig(config)
+          .then(function() {
+            return Q.delay(1000);
+          });
 
         });
 
