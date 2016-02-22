@@ -99,7 +99,7 @@ FirebaseInstance.prototype.getAuthTokens = function() {
   var deferred = Q.defer();
 
   request.get({
-    url: 'https://' + this.name + '.firebaseio.com/.settings/secrets.json',
+    url: 'https://' + this.name + '.firebaseio.com//.settings/secrets.json',
     qs: {
       auth: this.personalToken
     },
@@ -344,7 +344,7 @@ FirebaseInstance.prototype.getAuthConfig = function() {
   var deferred = Q.defer();
 
   request.get({
-    url: 'https://' + this.name + '.firebaseio.com/.settings/authConfig.json',
+    url: 'https://' + this.name + '.firebaseio.com/.settings/.json',
     qs: {
       auth: this.personalToken,
     },
@@ -359,10 +359,10 @@ FirebaseInstance.prototype.getAuthConfig = function() {
       deferred.reject(new Error(body.error));
     } else {
 
-      if (typeof body === 'string' && body.length === 0) {
+      if (typeof body.authConfig === 'string' && body.authConfig.length === 0) {
         deferred.resolve(null);
       } else {
-        deferred.resolve(JSON.parse(body));
+        deferred.resolve(JSON.parse(body.authConfig));
       }
 
     }
@@ -377,19 +377,21 @@ FirebaseInstance.prototype.setAuthConfig = function(config) {
 
     var deferred = Q.defer();
 
-    request.put({
-      url: 'https://' + this.name + '.firebaseio.com/.settings/authConfig.json',
-      qs: {
-        auth: this.personalToken,
-      },
+    request.post({
+      url: 'https://admin.firebase.com/firebase/' + this.name + '/authConfig',
       json: true,
-      body: config
+      body: {
+        token: this.adminToken,
+        authConfig: JSON.stringify(config),
+        _method: 'put'
+      },
     }, function(err, response, body) {
       if (err) {
         deferred.reject(err);
       } else if (response.statusCode > 299) {
         deferred.reject(new Error(response.statusCode));
       } else if (body && body.error) {
+        console.log(body.error);
         deferred.reject(new Error(body.error));
       } else {
         deferred.resolve();

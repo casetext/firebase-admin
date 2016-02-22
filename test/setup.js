@@ -9,9 +9,9 @@ global.expect = global.chai.expect;
 
 global.params = {};
 
-if (!process.env.FIREBASE_USER || !process.env.FIREBASE_PASS) {
+if (!process.env.FIREBASE_ADMIN_TOKEN) {
   console.error(
-    'You must set process.env.FIREBASE_USER and process.env.FIREBASE_PASS\n' +
+    'You must set process.env.FIREBASE_ADMIN_TOKEN\n' +
     'before running these tests.'
   );
   process.exit(1);

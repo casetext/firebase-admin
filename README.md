@@ -18,16 +18,14 @@ For automated testing, mostly.
 ```javascript
 var FirebaseAccount = require('firebase-admin');
 var Firebase = require('firebase');
-FirebaseAccount.getToken('user', 'pass')
-.then(function(token) {
-  var account = new FirebaseAccount(token);
-  account.createDatabase('new-instance-name')
-  .then(function(instance) {
-    var fb = new Firebase(instance.toString());
-  })
-  .catch(function(err) {
-    console.error('Oops, error creating instance:', err);
-  });
+
+var account = new FirebaseAccount(process.env.FIREBASE_ADMIN_TOKEN);
+account.createDatabase('new-instance-name')
+.then(function(instance) {
+  var fb = new Firebase(instance.toString());
+})
+.catch(function(err) {
+  console.error('Oops, error creating instance:', err);
 });
 ```
 

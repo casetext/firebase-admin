@@ -16,7 +16,7 @@ program
   .usage('[options] command...')
   .option(
     '-a, --firebase-admin-token <token>',
-    'Firebase admin token, if not in env.FIREBASE_ADMIN_TOKEN'
+    'Firebase admin token, if not in FIREBASE_ADMIN_TOKEN'
   )
   .option(
     '-i, --firebase-instance <name>',
@@ -27,7 +27,6 @@ program
 program.on('--help', function() {
   console.log('  Commands:');
   console.log('');
-  console.log('    login: get administrative token for future use');
   console.log('    bootstrap: create new database with random name');
   console.log('    create [name]: create new Firebase');
   console.log('    delete [name]: remove existing Firebase');
@@ -53,16 +52,12 @@ program.on('--help', function() {
 
   console.log('  Environment variables firebase-admin will use if defined include:');
   console.log('');
-  console.log('    FIREBASE_ADMIN_USER');
-  console.log('    FIREBASE_ADMIN_PASS');
+  console.log('    FIREBASE_ADMIN_TOKEN');
   console.log('');
 
 });
 
 var adminToken = program.firebaseAdminToken || process.env.FIREBASE_ADMIN_TOKEN;
-var account;
-var ready;
-
 var accountCommands = require('../lib/commands/account');
 var instanceCommands = require('../lib/commands/instance');
 
@@ -70,87 +65,35 @@ if (program.args.length === 0) {
   program.help();
 }
 
-
-if (adminToken) {
-  ready = Q.when(adminToken);
-} else if (process.env.FIREBASE_ADMIN_USER && process.env.FIREBASE_ADMIN_PASS) {
-
-  ready = FirebaseAccount.getToken(
-    process.env.FIREBASE_ADMIN_USER,
-    process.env.FIREBASE_ADMIN_PASS
-  );
-
-} else {
-
-  var deferred = Q.defer();
-
-  // exchange username and password for admin token
-  prompt.message = prompt.delimiter = '';
-  prompt.get([{
-    description: 'Firebase username:',
-    name: 'firebaseUser',
-    required: true
-  }, {
-    description: 'Password (hidden):',
-    name: 'firebasePass',
-    hidden: true,
-    required: true
-  }], function(err, result) {
-
-    if (err) {
-      deferred.reject(err);
-    } else {
-
-      var tokenPromise = FirebaseAccount.getToken(
-        result.firebaseUser,
-        result.firebasePass
-      );
-
-      deferred.resolve(tokenPromise);
-
-    }
-
-  });
-
-  ready = deferred.promise;
-
+if (!adminToken) {
+  console.error('ERROR: No Firebase token supplied.');
+  console.error('Please set FIREBASE_ADMIN_TOKEN or use the -a switch.');
+  process.exit(1);
 }
 
-ready
-.then(function(token) {
+var account = new FirebaseAccount(token);
+var command = program.args[0];
+if (accountCommands[command]) {
 
-  adminToken = token;
-  account = new FirebaseAccount(token);
-  var command = program.args[0];
-  if (accountCommands[command]) {
+  return accountCommands[command]
+  .apply(this, [account].concat(program.args.slice(1)));
 
-    return accountCommands[command]
-    .apply(this, [account].concat(program.args.slice(1)));
+} else if (instanceCommands[command]) {
 
-  } else if (instanceCommands[command]) {
+  if (program.firebaseInstance) {
 
-    if (program.firebaseInstance) {
+    return account.getDatabase(program.firebaseInstance)
+    .then(function(instance) {
 
-      return account.getDatabase(program.firebaseInstance)
-      .then(function(instance) {
+      return instanceCommands[command]
+      .apply(this, [instance].concat(program.args.slice(1)));
 
-        return instanceCommands[command]
-        .apply(this, [instance].concat(program.args.slice(1)));
-
-      });
-
-    } else {
-      throw new Error('You must specify an instance for ' + command + ' with -i');
-    }
+    });
 
   } else {
-    program.help();
+    throw new Error('You must specify an instance for ' + command + ' with -i');
   }
 
-})
-.catch(function(err) {
-
-  console.log(chalk.red.bold(err.message));
+} else {
   program.help();
-
-});
+}
