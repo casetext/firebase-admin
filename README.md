@@ -1,3 +1,8 @@
+DEPRECATED
+==========
+
+This repo is no longer supported.  The `firebase-admin` package on npm is now published by Google as of v4; the code here has nothing to do with `firebase-admin@4` and no longer works.
+
 firebase-admin
 ==============
 
